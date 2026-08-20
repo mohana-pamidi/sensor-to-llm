@@ -46,12 +46,11 @@ PROMPT_TEXT = (
 )
 
 tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-# Force float32: BFloat16 is the model default but causes dtype mismatches
-# on CPU when mixed with float32 sensor embeddings from the encoder/projector.
+# Load in float16 to save memory (especially critical for 2GB GPUs like MX550)
 model = AutoModelForCausalLM.from_pretrained(
     checkpoint,
     trust_remote_code=True,
-    torch_dtype=torch.float32,
+    torch_dtype=torch.float16,
 ).to(device)
 
 # Freeze
@@ -144,6 +143,7 @@ def forward(sensor_window: torch.Tensor):
     final_hidden : (B, llm_hidden_size)
     sensor_pos   : int
     """
+    # sensor window goes into building the embeddings
     inputs_embeds, attention_mask, sensor_pos = build_inputs_embeds(sensor_window)
 
     outputs = model(
