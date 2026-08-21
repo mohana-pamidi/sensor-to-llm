@@ -28,7 +28,7 @@ from testllm import build_inputs_embeds, model, device, llm_hidden_size, encoder
 BATCH_SIZE = 4           # Lowered to fit in 2GB VRAM (MX550)
 ACCUM_STEPS = 8          # Effective batch size = 32 (4 * 8)
 LEARNING_RATE = 1e-4
-EPOCHS = 10
+EPOCHS = 3
 NUM_CLASSES = 6
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "processed")
 
