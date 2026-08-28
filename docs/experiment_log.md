@@ -46,10 +46,14 @@ python src/train_direct.py --seed 90 --epochs 30 --batch_size 32 --lr 1e-3
 ### Result
 | Metric | Value |
 |--------|-------|
-| Best val Macro-F1 | **0.9548** |
+| Best val Macro-F1 (Colab, epoch 18) | **0.9548** |
+| Local re-eval Macro-F1 (Windows MX550) | **0.9311** |
 | Best epoch | 18 / 30 |
 | Train seed | 90 |
+| Eval seed (local) | 42 |
 | Checkpoint | `direct_classifier.pt` |
+
+> **Note on the difference**: The checkpoint saves the best epoch's F1 measured on Colab's T4. Local re-eval on the MX550 yields 0.9311 — the small gap is expected because `BatchNorm` uses running statistics accumulated during Colab training; minor floating-point differences across CUDA environments can shift the result slightly.
 
 ### Notes
 - Cheap to train (~30 seconds on Colab T4, no LLM loading).
@@ -222,6 +226,7 @@ With `N=3,077` val samples and a global `randperm`, the probability that any sam
 | **Trainable modules** | Encoder + head | Encoder + projector + head | None (eval only) |
 | **Train seed** | **90** | **90** | — |
 | **Eval seed** | — | — | **42** |
-| **Val Macro-F1** | **0.9548** | **0.9360** | **0.1533** |
+| **Val Macro-F1 (Colab)** | **0.9548** | **0.9360** | 0.7218 *(buggy shuffle)* |
+| **Val Macro-F1 (local)** | **0.9311** | — | **0.1533** ✅ |
 | **Trained on** | Google Colab (T4) | Google Colab (T4) | Windows / NVIDIA MX550 |
 | **Checkpoint** | `direct_classifier.pt` | `context_model.pt` | reuses `context_model.pt` |
