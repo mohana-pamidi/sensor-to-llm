@@ -1,4 +1,4 @@
-# Experiment Log — sensor-to-llm
+# Technical Note — sensor-to-llm
 
 A record of the three experimental conditions, training runs, results, and a critical bug that was caught and fixed during evaluation.
 
@@ -230,3 +230,11 @@ With `N=3,077` val samples and a global `randperm`, the probability that any sam
 | **Val Macro-F1 (local)** | **0.9311** | — | **0.1533** ✅ |
 | **Trained on** | Google Colab (T4) | Google Colab (T4) | Windows / NVIDIA MX550 |
 | **Checkpoint** | `direct_classifier.pt` | `context_model.pt` | reuses `context_model.pt` |
+
+---
+
+## Recommendations & Conclusions
+
+Based on the evaluation results, the Context-Embedding model (using the frozen LLM backbone) achieved a validation Macro-F1 of **0.9360**, while the simpler Direct Sensor Classifier baseline slightly outperformed it with an F1 score of **0.9548**. 
+
+Given that the two approaches perform similarly on this dataset, **routing sensor embeddings through the LLM is not recommended for practical deployment in this context.** The inclusion of the LLM backbone significantly increases the parameter count (from ~95k to ~360M) and computational overhead, which adds substantial latency during inference. For standard classification tasks without natural language integration requirements, the direct CNN baseline provides a far more efficient and robust solution.

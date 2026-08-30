@@ -140,6 +140,8 @@ Below are the total parameter counts for both models, including all frozen layer
 sensor-to-llm/
 ├── data/
 │   └── processed/          # X_train.npy, y_train.npy, X_val.npy, y_val.npy, ...
+├── docs/
+│   └── technical_note.md   # Record of experiments and parameter count analysis
 ├── src/
 │   ├── common.py                       # HARDataset, set_seed, macro_f1
 │   ├── sensor_encoder.py               # 1D-CNN SensorEncoder
