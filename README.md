@@ -82,7 +82,7 @@ ipykernel
 Encoder + head only, no LLM.
 
 ```bash
-python src/train_direct.py --seed 42 --epochs 30 --batch_size 32 --lr 1e-3
+python src/train_direct.py --seed 90 --epochs 30 --batch_size 32 --lr 1e-3
 ```
 
 ### Condition 2 — Context-Embedding Model (LLaVA-style)
@@ -107,12 +107,30 @@ Evaluates the Condition 2 checkpoint with globally shuffled sensor embeddings to
 
 | Condition | Description | Train Seed | Eval Seed | Val Macro-F1 |
 |-----------|-------------|:----------:|:---------:|:------------:|
-| 1 | Direct classifier (no LLM) | 42 | — | — |
+| 1 | Direct classifier (no LLM) | **90** | — | **0.9548** |
 | 2 | Context model (encoder -> frozen LLM) | **90** | — | **0.9360** |
 | 3 | Condition 2 checkpoint, globally shuffled embeddings | 90 | **42** | **0.1533** |
 
 **Interpretation:**
 The Condition 3 score (0.1533) is essentially random chance for 6 balanced classes (theoretical: 1/6 ≈ 0.1667). The massive drop from 0.9360 -> 0.1533 confirms the model is genuinely using the specific identity of each sensor window — not any static prompt bias or shortcut — to make predictions.
+
+### Limitations & Methodology Note: No Held-Out Test Set
+The dataset is split into a subject-disjoint 70/30 train/val split (via `parse_har_data.py`), but there is no third held-out test split. The reported Macro-F1 scores above are validation-set numbers used for both model selection (picking the best epoch by validation F1) and final reporting. This conflates selection and evaluation. 
+
+Given the small dataset size and timebox constraints for this prototype, a true three-way split was omitted to preserve enough data for training. However, future iterations should include a dedicated test set to prevent any risk of overfitting to the validation split.
+
+---
+
+## Parameter Counts
+
+Below are the total parameter counts for both models, including all frozen layers in the LLM.
+
+| Condition | Total Params (all) | Trainable Params |
+|-----------|--------------------|------------------|
+| **Condition 1** (CNN baseline) | **95,878** | 95,878 |
+| **Condition 2** (CNN + frozen LLM) | **360,708,294** | 381,126 |
+
+*The custom trainable stack (encoder + projector + head) makes up just **~0.11%** of the total parameter budget in Condition 2.*
 
 ---
 
